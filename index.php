@@ -65,7 +65,7 @@ https://templatemo.com/tm-562-space-dynamic
               <!-- <li class="scroll-to-section"><a href="#blog">Blog</a></li> 
               <li class="scroll-to-section"><a href="#contact">Message Us</a></li> -->
               <li class="scroll-to-section"><div class="main-red-button"><a href="#contact">Contactez - nous</a></div></li>
-              <li class="scroll-to-section"><div class="main-red-button"><a href="dashboard/index.html">Connexion</a></div></li> 
+              <li class="scroll-to-section"><div class="main-red-button"><a href="dashboard\index.html">Connexion</a></div></li> 
             </ul>        
             <a class='menu-trigger'>
                 <span>Menu</span>
@@ -460,30 +460,31 @@ https://templatemo.com/tm-562-space-dynamic
           </div>
         </div>
         <div class="col-lg-6 wow fadeInRight" data-wow-duration="0.5s" data-wow-delay="0.25s">
-          <form id="contact" action="" method="post">
+          <form id="contact" action="#" method="post">
             <div class="row">
               <div class="col-lg-6">
                 <fieldset>
-                  <input type="name" name="name" id="name" placeholder="Nom" autocomplete="on" required>
+                  <input type="text" name="name" id="name" placeholder="Nom" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-6">
                 <fieldset>
-                  <input type="surname" name="surname" id="surname" placeholder="Prénom" autocomplete="on" required>
+                  <input type="text" name="surname" id="surname" placeholder="Prénom" autocomplete="on" required>
                 </fieldset>
               </div>
               <div class="col-lg-12">
                 <fieldset>
-                  <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Votre Email" required="">
+                  <input type="email" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Votre Email" required>
                 </fieldset>
               </div>
               <div class="col-lg-12">
                 <fieldset>
-                  <textarea name="message" type="text" class="form-control" id="message" placeholder="Votre Message" required=""></textarea>  
+                  <textarea name="message" class="form-control" id="message" placeholder="Votre Message" required></textarea>  
                 </fieldset>
               </div>
               <div class="col-lg-12">
                 <fieldset>
+                  <div class="msg-return-reg"  style="color: green; text-align: center;"><p></p></div>
                   <button type="submit" id="form-submit" class="main-button ">Envoyer le Message</button>
                 </fieldset>
               </div>
@@ -515,6 +516,54 @@ https://templatemo.com/tm-562-space-dynamic
   <script src="assets/js/animation.js"></script>
   <script src="assets/js/imagesloaded.js"></script>
   <script src="assets/js/templatemo-custom.js"></script>
+
+  <script>
+    $('document').ready(function () {
+        $('#contact').submit(function( event ) {
+            event.preventDefault();
+            var formData = $('#contact').serialize();
+
+            $.ajax({
+                url: 'mail.php',
+                type: 'post',
+                data: formData, // Remember that you need to have your csrf token included
+                cache:false,
+                contentType: false,
+                processData: false,
+                success: function( _response ){
+                    $('.msg-return-reg').addClass('alert alert-success');
+                    $('.msg-return-reg').text(_response.return);
+                    $('.msg-return-reg p').css('display','block');
+
+                    $( "#contact input[type='text']" ).val( "" );
+                    $( "#contact input[type='email']" ).val( "" );
+                    $( "#contact textarea" ).val( "" );
+
+                    var $btn = $(this);
+                    $btn.button('loading');
+                    // simulating a timeout
+                    setTimeout(function () {
+                        $btn.button('reset');
+                    }, 1000);
+                    $(".alert").delay(2000).slideUp(200, function() {
+                        $(this).css('display','none');
+                    });
+                    //location.reload();
+                },
+                error: function( _response ){
+                    var err = _response['responseJSON']['return'];
+                    if(err == undefined){
+                        err = "Désolé, une erreur innatendue s'est produite, veuillez réessayer"
+                    }
+                    console.log(err);
+                }
+            });
+
+        });
+
+        
+    })
+</script>
 
 </body>
 </html>
